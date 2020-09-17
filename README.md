@@ -1,7 +1,7 @@
 # Leaflet.Measure 
 Leaflet.Measure Is a leaflet plugin for measuring distances and areas.  
 
-Online [DEMO](https://ptma.github.io/leaflet.measure/examples/measure.html).
+Online [DEMO](https://ptma.github.io/Leaflet.Measure/examples/measure.html).
 
 ## Example
 ```javascript
@@ -16,7 +16,7 @@ L.control.measure().addTo(map);
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | position | String | 'topleft' | The position of the control. |
-| title | String | 'Legend' | The title of the control. |
+| title | String | 'Measurement' | The title of the control. |
 | collapsed | Boolean | false | If true, the control will be collapsed into an icon and expanded on mouse hover or touch. |
 | color | String | '#FF0080'| The color of the lines or polygons. |
 
