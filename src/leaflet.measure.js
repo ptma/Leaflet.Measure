@@ -13,20 +13,22 @@
         factory(L);
     }
 })(function (L) {
+    L.Measure = {
+        linearMeasurement: "Distance measurement",
+        areaMeasurement: "Area measurement",
+        start: "Start",
+        meter: "m",
+        kilometer: "km",
+        squareMeter: "m²",
+        squareKilometers: "km²",
+    };
+
     L.Control.Measure = L.Control.extend({
         options: {
             position: "topright",
             title: "Measurement",
             collapsed: true,
             color: "#FF0080",
-
-            linearMeasurement: "Distance measurement",
-            areaMeasurement: "Area measurement",
-            start: "Start",
-            meter: "m",
-            kilometer: "km",
-            squareMeter: "m²",
-            squareKilometers: "km²",
         },
         initialize: function (options) {
             L.Util.setOptions(this, options);
@@ -56,14 +58,14 @@
             var ele_ul = L.DomUtil.create("ul", "leaflet-measure-actions", this._contents);
             var ele_li = L.DomUtil.create("li", "leaflet-measure-action", ele_ul);
             var ele_link_line = L.DomUtil.create("a", "start", ele_li);
-            ele_link_line.innerText = this.options.linearMeasurement;
+            ele_link_line.innerText = L.Measure.linearMeasurement;
             ele_link_line.href = "#";
             L.DomEvent.disableClickPropagation(ele_link_line);
             L.DomEvent.on(ele_link_line, "click", this._enableMeasureLine, this);
 
             ele_li = L.DomUtil.create("li", "leaflet-measure-action", ele_ul);
             var ele_link_area = L.DomUtil.create("a", "leaflet-measure-action start", ele_li);
-            ele_link_area.innerText = this.options.areaMeasurement;
+            ele_link_area.innerText = L.Measure.areaMeasurement;
             ele_link_area.href = "#";
             L.DomEvent.disableClickPropagation(ele_link_area);
             L.DomEvent.on(ele_link_area, "click", this._enableMeasureArea, this);
@@ -87,17 +89,19 @@
         },
         _enableMeasureLine: function (ev) {
             L.DomEvent.stopPropagation(ev);
-            this._measureHandler = new L.Handler.Measure(this, {
-                areaModel: false,
+            this._measureHandler = new L.MeasureAction(this._map, {
+                model: "distance",
                 color: this.options.color,
             });
+            this._measureHandler.enable();
         },
         _enableMeasureArea: function (ev) {
             L.DomEvent.stopPropagation(ev);
-            this._measureHandler = new L.Handler.Measure(this, {
-                areaModel: true,
+            this._measureHandler = new L.MeasureAction(this._map, {
+                model: "area",
                 color: this.options.color,
             });
+            this._measureHandler.enable();
         },
         _expand: function () {
             this._link.style.display = "none";
@@ -115,7 +119,7 @@
         return new L.Control.Measure(options);
     };
 
-    L.Layer.MeasureLable = L.Layer.extend({
+    L.MeasureLable = L.Layer.extend({
         options: {
             offset: new L.Point(0, 30),
             latlng: null,
@@ -199,22 +203,20 @@
         },
     });
 
-    L.measureLable = function (options) {
-        return new L.Layer.MeasureLable(options);
-    };
-
-    L.Handler.Measure = L.Handler.extend({
+    L.MeasureAction = L.Handler.extend({
         options: {
             color: "#FF0080",
-            areaModel: false, // true for measure area, otherwise measure distance
+            model: "distance", // area or distance
         },
 
-        initialize: function (control, options) {
-            this._control = control;
-            this._map = control._map;
+        initialize: function (map, options) {
+            this._map = map;
             this._map._measureHandler = this;
             L.Util.setOptions(this, options);
-            this.enable();
+        },
+        setModel: function (model) {
+            this.options.model = model;
+            return this;
         },
         addHooks: function () {
             this._activeMeasure();
@@ -236,15 +238,15 @@
                 this._totalDistance += this._getDistance(points[length - 2], points[length - 1]);
                 this._addMeasurePoint(latlng);
                 this._addMarker(latlng);
-                if (!this.options.areaModel) {
+                if (this.options.model !== "area") {
                     this._addLable(latlng, this._getDistanceString(this._totalDistance), "leaflet-measure-lable");
                 }
             } else {
                 this._totalDistance = 0;
                 this._addMeasurePoint(latlng);
                 this._addMarker(latlng);
-                if (!this.options.areaModel) {
-                    this._addLable(latlng, this._control.options.start, "leaflet-measure-lable");
+                if (this.options.model !== "area") {
+                    this._addLable(latlng, L.Measure.start, "leaflet-measure-lable");
                 }
                 this._trail.points.push(latlng);
             }
@@ -293,7 +295,7 @@
                     if (!event || event.type === "contextmenu") {
                         this._directPath.setLatLngs(this._trail.points);
                     }
-                    if (this.options.areaModel) {
+                    if (this.options.model === "area") {
                         this._addLable(
                             this._lastPoint,
                             this._getAreaString(this._trail.points),
@@ -317,7 +319,7 @@
         },
         _resetDirectPath: function (latlng) {
             if (!this._directPath) {
-                if (this.options.areaModel) {
+                if (this.options.model === "area") {
                     this._directPath = new L.Polygon([latlng], {
                         weight: 2,
                         color: this.options.color,
@@ -341,7 +343,7 @@
         },
         _addMeasurePoint: function (latlng) {
             if (!this._measurePath) {
-                if (this.options.areaModel) {
+                if (this.options.model === "area") {
                     this._measurePath = new L.Polygon([latlng], {
                         weight: 2,
                         color: this.options.color,
@@ -378,7 +380,7 @@
             this._trail.overlays.push(marker);
         },
         _addLable: function (latlng, content, className, ended) {
-            var lable = new L.Layer.MeasureLable({
+            var lable = new L.MeasureLable({
                 latlng: latlng,
                 content: content,
                 className: className,
@@ -406,8 +408,8 @@
         },
         _getDistanceString: function (distance) {
             return distance < 1e3
-                ? this._numberFormat(distance, 0) + " " + this._control.options.meter
-                : this._numberFormat(distance / 1e3, 2) + " " + this._control.options.kilometer;
+                ? this._numberFormat(distance, 0) + " " + L.Measure.meter
+                : this._numberFormat(distance / 1e3, 2) + " " + L.Measure.kilometer;
         },
 
         _getDistance: function (latlng1, latlng2) {
@@ -424,8 +426,8 @@
         _getAreaString: function (points) {
             var a = Math.round(this._getArea(points));
             return a < 1e6
-                ? this._numberFormat(a, 0) + " " + this._control.options.squareMeter
-                : this._numberFormat(a / 1e6, 2) + " " + this._control.options.squareKilometers;
+                ? this._numberFormat(a, 0) + " " + L.Measure.squareMeter
+                : this._numberFormat(a / 1e6, 2) + " " + L.Measure.squareKilometers;
         },
         _getArea: function (points) {
             var earthRadius = 6378137;
@@ -462,4 +464,8 @@
             ].join("");
         },
     });
+
+    L.measureAction = function (map, options) {
+        return new L.MeasureAction(map, options);
+    };
 }, window);

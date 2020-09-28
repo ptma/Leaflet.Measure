@@ -5,14 +5,22 @@ Online [DEMO](https://ptma.github.io/Leaflet.Measure/examples/measure.html).
 
 ## Example
 ```javascript
+// 1. add control to map
 var map = L.map("map", {
         center: [29, 120],
     });
-    
 L.control.measure().addTo(map);
+
+// 2. using action directly
+var measureAction = new L.MeasureAction(map, {
+    model: "distance", // 'area' or 'distance', default is 'distance'
+});
+// measureAction.setModel('area');
+measureAction.enable();
 ```
 
-## Options
+## L.Control.Measure 
+### Options
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | position | String | 'topleft' | The position of the control. |
@@ -20,14 +28,27 @@ L.control.measure().addTo(map);
 | collapsed | Boolean | false | If true, the control will be collapsed into an icon and expanded on mouse hover or touch. |
 | color | String | '#FF0080'| The color of the lines or polygons. |
 
-### Text options
-The default is in English, you can set it to the language that you want.
+## L.MeasureAction 
+### Options
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| linearMeasurement | String | 'Distance measurement'|  |
-| areaMeasurement | String | 'Area measurement'|  |
-| start | String | 'Start'|  |
-| meter | String | 'm'|  |
-| kilometer | String | 'km'|  |
-| squareMeter | String | 'm²'|  |
-| squareKilometers | String | 'km²'|  |
+| model | String | 'distance' | Measurement mode. Possible values are 'distance' or 'area'. |
+| color | String | '#FF0080'| The color of the lines or polygons. |
+
+### Methods
+| Method | Returns | Description |
+|--------|---------|-------------|
+| setModel(<String> model) | this | Sets the measurement mode. Possible values are 'distance' or 'area'. |
+
+## Customize Language
+```javascript
+L.Measure = {
+    linearMeasurement: "Distance measurement",
+    areaMeasurement: "Area measurement",
+    start: "Start",
+    meter: "m",
+    kilometer: "km",
+    squareMeter: "m²",
+    squareKilometers: "km²",
+};
+```

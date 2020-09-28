@@ -5,14 +5,23 @@ Leaflet.Measure 是一个 Leaflet 的测量距离和面积的工具插件。
 
 ## 用法示例
 ```javascript
+// 1. 添加控件
 var map = L.map("map", {
         center: [29, 120],
     });
     
 L.control.measure().addTo(map);
+
+// 2. 直接执行动作
+var measureAction = new L.MeasureAction(map, {
+    model: "distance", // 'area' or 'distance', default is 'distance'
+});
+// measureAction.setModel('area');
+measureAction.enable();
 ```
 
-## 选项
+## 控件（L.Control.Measure）
+### 选项
 | 选项 | 类型 | 默认值 | 描述 |
 |--------|------|---------|-------------|
 | position | String | 'topleft' | 控件位置。 |
@@ -20,14 +29,27 @@ L.control.measure().addTo(map);
 | collapsed | Boolean | false | 面板是否默认展开。 |
 | color | String | '#FF0080'| 测量线条的颜色。 |
 
-### 文本选项
-默认为英文， 如需要可以设置为你所期望的语言文本。
+## 动作（L.MeasureAction）
+### 选项
 | 选项 | 类型 | 默认值 | 描述 |
 |--------|------|---------|-------------|
-| linearMeasurement | String | 'Distance measurement'|  |
-| areaMeasurement | String | 'Area measurement'|  |
-| start | String | 'Start'|  |
-| meter | String | 'm'|  |
-| kilometer | String | 'km'|  |
-| squareMeter | String | 'm²'|  |
-| squareKilometers | String | 'km²'|  |
+| model | String | 'distance' | 测量模式. 可以是'distance' 或 'area'. |
+| color | String | '#FF0080'| The color of the lines or polygons. |
+
+### 方法
+| 方法 | 返回 | 描述 |
+|--------|---------|-------------|
+| setModel(<String> model) | this | 设置测量模式. 可以是'distance' 或 'area'. |
+
+## 显示语言定义
+```javascript
+L.Measure = {
+    linearMeasurement: "距离测量",
+    areaMeasurement: "面积测量",
+    start: "开始",
+    meter: "米",
+    kilometer: "公里",
+    squareMeter: "平方米",
+    squareKilometers: "平方公里",
+};
+```
