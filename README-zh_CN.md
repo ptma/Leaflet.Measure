@@ -39,7 +39,7 @@ measureAction.enable();
 ### 方法
 | 方法 | 返回 | 描述 |
 |--------|---------|-------------|
-| setModel(<String> model) | this | 设置测量模式. 可以是'distance' 或 'area'. |
+| setModel(\<String\> model) | this | 设置测量模式. 可以是'distance' 或 'area'. |
 
 ## 显示语言定义
 ```javascript

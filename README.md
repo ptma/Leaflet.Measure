@@ -38,7 +38,7 @@ measureAction.enable();
 ### Methods
 | Method | Returns | Description |
 |--------|---------|-------------|
-| setModel(<String> model) | this | Sets the measurement mode. Possible values are 'distance' or 'area'. |
+| setModel(\<String\> model) | this | Sets the measurement mode. Possible values are 'distance' or 'area'. |
 
 ## Customize Language
 ```javascript
